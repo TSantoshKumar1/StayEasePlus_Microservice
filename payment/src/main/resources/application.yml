@@ -1,0 +1,33 @@
+server:
+  port: 8088
+spring:
+  application:
+    name: PAYMENT-SERVICE
+  datasource:
+    url: jdbc:mysql://localhost:3306/paymetmicroservice
+    username: root
+    password: santosh1998$
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernates:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  config:
+    import: optional:configserver:http://localhost:8085
+
+# razorpay configuration...
+
+razorpay:
+   api:
+     key: your razor key
+     secret: razor secret
+
+# okta configuration....
+
+okta:
+  oauth2:
+    issuer: https://dev-56654283.okta.com/oauth2/default
+    audience: api://default

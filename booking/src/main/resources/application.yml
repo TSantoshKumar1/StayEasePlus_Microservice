@@ -1,0 +1,78 @@
+server:
+  port: 8086
+spring:
+  application:
+    name: BOOKING-SERVICE
+  datasource:
+    url: jdbc:mysql://localhost:3306/BookingMicroservice
+    username: root
+    password: santosh1998$
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  config:
+    import: optional:configserver:http://localhost:8085
+
+ #  kafka configuration....
+  kafka:
+    bootstrap-servers:
+      localhost:9092
+    consumer:
+      group-id: notification-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+
+# actuator configuration...
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+
+# resilence4j configuration...
+resilience4j:
+  circuitbreaker:
+    instances:
+      orderPaymentBreaker:
+       register-health-indicator: true
+       event-consumer-buffer-size: 10
+       failure-rate-threshold: 50
+       minimum-number-of-calls: 5
+       automatic-transition-from-open-to-half-open-enabled: true
+       wait-duration-in-open-state: 6s
+       permitted-number-of-calls-in-half-open-state: 3
+       sliding-window-size: 10
+       sliding-window-type: COUNT_BASED
+
+# retry mechanism configuration...
+  retry:
+    instances:
+      orderPaymentService:
+        max-attempts: 3
+        wait-duration: 3s
+
+#okta configuration for verify jwt token
+okta:
+  oauth2:
+    issuer: https://dev-56654283.okta.com/oauth2/default
+    audience: api://default
+
+
